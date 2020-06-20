@@ -24,7 +24,7 @@ class TriviaTestCase(unittest.TestCase):
             self.db.init_app(self.app)
             # create all tables
             self.db.create_all()
-    
+
     def tearDown(self):
         """Executed after reach test"""
         pass
@@ -43,15 +43,30 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res_data["message"], "Resource Not Found")
 
     def test_searchQuestion(self):
-        res = self.client().post('/questions', json={"searchTerm" : "heaviest"})
+        res = self.client().post('/questions', json={"searchTerm": "heaviest"})
         res_data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res_data["total_questions"], 1)
 
-    # For this test to work, there needs to be a question with ID 1 in the test database
+    def test_searchQuestion_notFound(self):
+        res = self.client().post('/questions', json={"searchTerm": "zzzzz"})
+        res_data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res_data["total_questions"], 0)
+
     def test_deleteQuestion(self):
-        res = self.client().delete('/questions/1')
+        req_1 = self.client().post(
+            '/questions',
+            json={
+                'question': 'q1',
+                'answer': 'a1',
+                'difficulty': '1',
+                'category': '1'})
+        res_data_1 = json.loads(req_1.data)
+        id = res_data_1["id"]
+        res = self.client().delete(f'/questions/{id}')
         res_data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
 
@@ -62,14 +77,25 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res_data["message"], "Unprocessable")
 
     def test_addQuestion(self):
-        res = self.client().post('/questions', json={'question' : 'q1', 'answer' : 'a1', 'difficulty' : '1', 'category' : '1'})
+        res = self.client().post(
+            '/questions',
+            json={
+                'question': 'q1',
+                'answer': 'a1',
+                'difficulty': '1',
+                'category': '1'})
         res_data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res_data["success"], True)
-    
+
     def test_addQuestion_400_error(self):
-        res = self.client().post('/questions', json={ "answer" : "a1", "difficulty" : 1, "category" : 1})
+        res = self.client().post(
+            '/questions',
+            json={
+                "answer": "a1",
+                "difficulty": 1,
+                "category": 1})
         res_data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 400)
@@ -80,13 +106,35 @@ class TriviaTestCase(unittest.TestCase):
         res = self.client().get(f'/categories/{id}/questions')
         res_data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(res_data["current_category"], "1") 
+        self.assertEqual(str(res_data["current_category"]), "1")
+
+    def test_get_question_by_category_404_error(self):
+        id = 1000
+        res = self.client().get(f'/categories/{id}/questions')
+        res_data = json.loads(res.data)
+        self.assertEqual(res.status_code, 404)
 
     def test_play_quiz(self):
-        res = self.client().post('/quizzes', json={'quiz_category' : {'type' : 'Science', 'id' : '1'},'previous_questions' : []})
+        res = self.client().post(
+            '/quizzes',
+            json={
+                'quiz_category': {
+                    'type': 'Science',
+                    'id': '1'},
+                'previous_questions': []})
         res_data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
 
+    def test_play_quiz_400_error(self):
+        res = self.client().post(
+            '/quizzes',
+            json={
+                'quiz_category': {
+                    'type': 'Science'
+                }
+            })
+
+        self.assertEqual(res.status_code, 400)
 
 
 # Make the tests conveniently executable
