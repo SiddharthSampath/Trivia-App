@@ -68,6 +68,7 @@ class QuizView extends Component {
           guess: '',
           forceEnd: result.question ? false : true
         })
+        
         return;
       },
       error: (error) => {
@@ -130,11 +131,25 @@ class QuizView extends Component {
     )
   }
 
+  // evaluateAnswer = () => {
+  //   const formatGuess = this.state.guess.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase()
+  //   const answerArray = this.state.currentQuestion.answer.toLowerCase().split(' ');
+  //   return answerArray.includes(formatGuess)
+  // }
   evaluateAnswer = () => {
-    const formatGuess = this.state.guess.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase()
-    const answerArray = this.state.currentQuestion.answer.toLowerCase().split(' ');
-    return answerArray.includes(formatGuess)
-  }
+
+    const formatGuess = this.state.guess.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase() ;
+    const answerArray = this.state.currentQuestion.answer.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase();
+    
+    if (answerArray == formatGuess) {
+    
+    return true }
+    
+    else {
+    
+    return false }
+    
+    }
 
   renderCorrectAnswer(){
     const formatGuess = this.state.guess.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").toLowerCase()
@@ -150,6 +165,8 @@ class QuizView extends Component {
   }
 
   renderPlay(){
+    console.log(this.state.previousQuestions.length)
+    console.log(this.state.forceEnd)
     return this.state.previousQuestions.length === questionsPerPlay || this.state.forceEnd
       ? this.renderFinalScore()
       : this.state.showAnswer 

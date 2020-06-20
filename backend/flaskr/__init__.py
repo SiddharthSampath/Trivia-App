@@ -134,7 +134,7 @@ def create_app(test_config=None):
         })
       #If there is no search term in the json, then we add a new question
       else:
-        print(question_json)
+        #print(question_json)
         question = question_json["question"]
         answer = question_json["answer"]
         category = question_json["category"]
@@ -166,7 +166,55 @@ def create_app(test_config=None):
     })
 
     
-    
+  @app.route('/quizzes', methods=['POST'])
+  def play_quiz():
+    try:
+      print("Yes")
+      #Get the category and previous questions from the request sent
+      question_data = request.get_json()
+      #print(questions_data)
+      category = question_data["quiz_category"]["id"]
+      category_type = question_data["quiz_category"]["type"]
+
+      print(f"Category : {category}")
+      print(f"Category Type : {category_type}")
+      previous_questions = question_data["previous_questions"]
+      #The next question should not be in the previous question. So, we can remove all the previous questions from the category_questions.
+      # To do this optimally, we can store all previous questions in a hash table/ dictionary so that we can check if a question is a previous question in constant time.
+      previous_questions_dictionary = {}
+      for question in previous_questions:
+        previous_questions_dictionary[question] = True
+
+      if category_type == "click":
+        category_questions = Question.query.all()
+      else:
+        category_questions = Question.query.filter(Question.category == category).all()
+      new_questions = []
+      for question in category_questions:
+        # This checks whether the question is a previous question or not, in constant time.
+        if question.id not in previous_questions_dictionary:
+          new_questions.append(question)
+           
+      
+      if len(new_questions) == 0:
+        random_next_question = None
+      else:
+        
+        random_next_question = random.choice(new_questions)
+        random_next_question = random_next_question.format()
+        print(random_next_question)
+      return jsonify({
+        "question" : random_next_question
+
+      })
+    except:
+      abort(400)
+
+
+
+
+
+
 
   @app.errorhandler(404)
   def notFound(error):

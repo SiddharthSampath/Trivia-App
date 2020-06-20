@@ -56,7 +56,6 @@ class TriviaTestCase(unittest.TestCase):
     def test_addQuestion(self):
         res = self.client().post('/questions', json={'question' : 'q1', 'answer' : 'a1', 'difficulty' : '1', 'category' : '1'})
         res_data = json.loads(res.data)
-        print(res_data)
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res_data["success"], True)
@@ -82,6 +81,13 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res_data["current_category"], "1") 
 
+    def test_play_quiz(self):
+        question = Question.query.get(1)
+        print(question.format())
+        question = question.format()
+        res = self.client().post('/quizzes', json={'quiz_category' : {'type' : 'Science', 'id' : '1'},'previous_questions' : []})
+        res_data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
 
 
     
@@ -94,3 +100,6 @@ class TriviaTestCase(unittest.TestCase):
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
+    '''
+    curl http://localhost:5000/questions -X POST -H "Content-Type: application/json" -d '{ "question": "Which US state contains an area known as the Upper Penninsula?", "answer": "Michigan", "difficulty":"3", "category": "3" }'
+    '''
