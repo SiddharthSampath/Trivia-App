@@ -43,7 +43,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res_data["message"], "Resource Not Found")
 
     def test_deleteQuestion(self):
-        res = self.client().delete('/questions/3')
+        res = self.client().delete('/questions/1')
         res_data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
 
@@ -82,9 +82,6 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res_data["current_category"], "1") 
 
     def test_play_quiz(self):
-        question = Question.query.get(1)
-        print(question.format())
-        question = question.format()
         res = self.client().post('/quizzes', json={'quiz_category' : {'type' : 'Science', 'id' : '1'},'previous_questions' : []})
         res_data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
@@ -102,4 +99,6 @@ if __name__ == "__main__":
     unittest.main()
     '''
     curl http://localhost:5000/questions -X POST -H "Content-Type: application/json" -d '{ "question": "Which US state contains an area known as the Upper Penninsula?", "answer": "Michigan", "difficulty":"3", "category": "3" }'
+    curl http://localhost:5000/questions -X POST -H  "Content-Type: application/json" -d '{ "searchTerm" : "what"}'
+    curl http://localhost:5000/quizzes -X POST -H "Content-Type: application/json" -d '{"previous_questions": [], "quiz_category": {"type": "Science", "id": "0"}}"
     '''
