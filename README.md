@@ -18,4 +18,4 @@ The documentation for the API will be present in the backend README.
 
 ## Authors
 
-The REST API was created by Siddharth Sampath. The code for the API is present in the files __init__.py and test_flaskr.py. The frontend was created by the Udacity team.
+The REST API was created by Siddharth Sampath. The code for the API is present in the files __ init__.py and test_flaskr.py. The frontend was created by the Udacity team.
