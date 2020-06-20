@@ -42,6 +42,14 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         self.assertEqual(res_data["message"], "Resource Not Found")
 
+    def test_searchQuestion(self):
+        res = self.client().post('/questions', json={"searchTerm" : "heaviest"})
+        res_data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res_data["total_questions"], 1)
+
+    # For this test to work, there needs to be a question with ID 1 in the test database
     def test_deleteQuestion(self):
         res = self.client().delete('/questions/1')
         res_data = json.loads(res.data)
@@ -59,20 +67,13 @@ class TriviaTestCase(unittest.TestCase):
 
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res_data["success"], True)
-
+    
     def test_addQuestion_400_error(self):
         res = self.client().post('/questions', json={ "answer" : "a1", "difficulty" : 1, "category" : 1})
         res_data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 400)
         self.assertEqual(res_data["message"], "Bad Request")
-
-    def test_searchQuestion(self):
-        res = self.client().post('/questions', json={"searchTerm" : "heaviest"})
-        res_data = json.loads(res.data)
-
-        self.assertEqual(res.status_code, 200)
-        self.assertEqual(res_data["total_questions"], 2)
 
     def test_get_question_by_category(self):
         id = 1
@@ -87,18 +88,7 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(res.status_code, 200)
 
 
-    
-    """
-    TODO
-    Write at least one test for each test for successful operation and for expected errors.
-    """
-
 
 # Make the tests conveniently executable
 if __name__ == "__main__":
     unittest.main()
-    '''
-    curl http://localhost:5000/questions -X POST -H "Content-Type: application/json" -d '{ "question": "Which US state contains an area known as the Upper Penninsula?", "answer": "Michigan", "difficulty":"3", "category": "3" }'
-    curl http://localhost:5000/questions -X POST -H  "Content-Type: application/json" -d '{ "searchTerm" : "what"}'
-    curl http://localhost:5000/quizzes -X POST -H "Content-Type: application/json" -d '{"previous_questions": [], "quiz_category": {"type": "Science", "id": "0"}}"
-    '''
